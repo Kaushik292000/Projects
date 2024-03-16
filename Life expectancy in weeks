@@ -1,0 +1,4 @@
+age=input()
+years=90-int(age)
+Weeks= years* 52
+print(f"You have {Weeks} weeks left")
