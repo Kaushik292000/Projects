@@ -1,0 +1,35 @@
+def generate_resume(full_name, contact_email, phone_number, github_url, linkedin_url, about_me, education_institution, education_degree, education_start_year, education_end_year, work_position, work_company, work_start_year, work_end_year, work_description):
+    # Connect to the database
+    conn = connect_to_db()
+
+    # Insert the resume data into the database
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO resume (full_name, contact_email, phone_number, github_url, linkedin_url, about_me, education_institution, education_degree, education_start_year, education_end_year, work_position, work_company, work_start_year, work_end_year, work_description)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (full_name, contact_email, phone_number, github_url, linkedin_url, about_me, education_institution, education_degree, education_start_year, education_end_year, work_position, work_company, work_start_year, work_end_year, work_description))
+    conn.commit()
+
+    # Get the resume data from the database
+    cursor.execute('''
+        SELECT * FROM resume WHERE full_name = ?
+    ''', (full_name,))
+    resume_data = cursor.fetchone()
+
+    # Load the Jinja2 template
+    env = Environment(loader=FileSystemLoader('.'))
+    template = env.get_template('resume.html')
+
+    # Render the template with the resume data
+    rendered_template = template.render(resume_data=resume_data)
+
+    # Save the rendered template to a file
+    with open(f'{full_name}_resume.html', 'w') as f:
+        f.write(rendered_template)
+
+    # Close the database connection
+    conn.close()
+def load_template():
+    env = Environment(loader=FileSystemLoader('.'))
+    template = env.get_template('resume.html')
+    return template
